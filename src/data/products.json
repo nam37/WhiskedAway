@@ -1,0 +1,50 @@
+﻿[
+  {
+    "sku": "CROISSANT-BUTTER",
+    "slug": "butter-croissant",
+    "name": "Butter Croissant",
+    "description": "A flaky, golden croissant with deep butter aroma and delicate layers.",
+    "price_display": "$4.50",
+    "image_url": "/assets/images/whisked-away-hero.jpg"
+  },
+  {
+    "sku": "TART-LEMON",
+    "slug": "lemon-tart",
+    "name": "Lemon Tart",
+    "description": "Bright citrus curd in a crisp shell with a soft, toasted meringue cap.",
+    "price_display": "$6.00",
+    "image_url": "/assets/images/whisked-away-hero.jpg"
+  },
+  {
+    "sku": "COOKIE-CHOCO",
+    "slug": "chocolate-chunk-cookie",
+    "name": "Chocolate Chunk Cookie",
+    "description": "Chewy center, crisp edge, and oversized chocolate chunks.",
+    "price_display": "$3.50",
+    "image_url": "/assets/images/whisked-away-hero.jpg"
+  },
+  {
+    "sku": "CAKE-VANILLA",
+    "slug": "vanilla-celebration-cake",
+    "name": "Vanilla Celebration Cake",
+    "description": "Classic vanilla sponge layered with whipped buttercream and vanilla bean.",
+    "price_display": "$48.00",
+    "image_url": "/assets/images/whisked-away-hero.jpg"
+  },
+  {
+    "sku": "MUFFIN-BERRY",
+    "slug": "triple-berry-muffin",
+    "name": "Triple Berry Muffin",
+    "description": "Blueberries, raspberries, and strawberries with a light crumble top.",
+    "price_display": "$4.25",
+    "image_url": "/assets/images/whisked-away-hero.jpg"
+  },
+  {
+    "sku": "BREAD-SOUR",
+    "slug": "country-sourdough",
+    "name": "Country Sourdough",
+    "description": "Naturally leavened loaf with a crisp crust and open crumb.",
+    "price_display": "$8.00",
+    "image_url": "/assets/images/whisked-away-hero.jpg"
+  }
+]

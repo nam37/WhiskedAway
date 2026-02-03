@@ -1,48 +1,55 @@
-# Astro Starter Kit: Basics
+﻿# Whisked Away Bakery v1
 
-```sh
-npm create astro@latest -- --template basics
+Server-rendered bakery site built with Node.js, Hono, and htmx. Includes inquiry-based cart, recipe CMS, and admin tooling.
+
+## Requirements
+
+- Node.js 18+
+- Postgres (Neon recommended) or JSON-based recipes for local start
+
+## Local setup
+
+1. Install dependencies
+
+```
+npm install
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+2. Configure environment variables
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```
+cp .env.example .env
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+3. (Optional) Apply migrations to your Postgres database
 
-## 🧞 Commands
+```
+psql $DATABASE_URL -f migrations/001_favorite_recipes.sql
+psql $DATABASE_URL -f migrations/002_inquiries.sql
+```
 
-All commands are run from the root of the project, from a terminal:
+4. Run the server
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```
+npm run dev
+```
 
-## 👀 Want to learn more?
+Visit `http://localhost:3000`.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Scripts
+
+- `npm run dev` - start the local server with file watching
+- `npm start` - start the server for production
+
+## Notes
+
+- Product data is stored in `src/data/products.json` and loaded via a repository layer to ease migration to Postgres later.
+- Recipes will use `src/data/recipes.json` when `DATABASE_URL` is not configured.
+- Recipe images can be uploaded locally and will be saved under `public/uploads/`.
+- Admin routes are protected with HTTP Basic Auth (`ADMIN_USER` / `ADMIN_PASS`).
+
+## Deploy to Cloud Run
+
+- Ensure required environment variables are set in your Cloud Run service.
+- Buildpacks will detect the Node.js runtime from `package.json`.
+- Set the service to listen on `PORT` (default 3000).
