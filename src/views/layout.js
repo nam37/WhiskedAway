@@ -1,7 +1,7 @@
 ﻿import { escapeHtml } from "../lib/escape.js";
 import { renderCartBadge } from "./partials/cart.js";
 
-export function layout({ title, body, cartCount = 0, head = "" }) {
+export function layout({ title, body, cartCount = 0, head = "", showAdmin = false }) {
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -26,6 +26,7 @@ export function layout({ title, body, cartCount = 0, head = "" }) {
         <nav class="site-nav">
           <a href="/bake-shop">Bake Shop</a>
           <a href="/recipes">Favorite Recipes</a>
+          ${showAdmin ? '<a href="/admin">Admin</a>' : ""}
           <a href="/cart" class="cart-link">
             Cart
             <span

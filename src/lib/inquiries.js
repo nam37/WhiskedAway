@@ -1,5 +1,5 @@
 ﻿import crypto from "crypto";
-import { getPool } from "./db.js";
+import { getPool, query } from "./db.js";
 
 export async function createInquiry({
   name,
@@ -44,4 +44,25 @@ export async function createInquiry({
   } finally {
     client.release();
   }
+}
+
+export async function listInquiriesWithItems() {
+  const inquiriesResult = await query(
+    "SELECT * FROM inquiries ORDER BY created_at DESC"
+  );
+  const itemsResult = await query(
+    "SELECT * FROM inquiry_items ORDER BY created_at DESC"
+  );
+
+  const itemsByInquiry = new Map();
+  for (const item of itemsResult.rows) {
+    const list = itemsByInquiry.get(item.inquiry_id) || [];
+    list.push(item);
+    itemsByInquiry.set(item.inquiry_id, list);
+  }
+
+  return inquiriesResult.rows.map((inquiry) => ({
+    ...inquiry,
+    items: itemsByInquiry.get(inquiry.id) || []
+  }));
 }

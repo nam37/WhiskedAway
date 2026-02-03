@@ -4,9 +4,17 @@ import { basicAuth } from "hono/basic-auth";
 import { serve } from "@hono/node-server";
 import { HTTPException } from "hono/http-exception";
 import { serveStatic } from "@hono/node-server/serve-static";
-import { listProducts, getProductBySlug, getProductBySku } from "./lib/products.js";
+import {
+  listProducts,
+  getProductBySlug,
+  getProductBySku,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct
+} from "./lib/products.js";
 import { readCart, writeCart, clearCart, upsertCartItem, cartItemCount } from "./lib/cart.js";
-import { createInquiry } from "./lib/inquiries.js";
+import { createInquiry, listInquiriesWithItems } from "./lib/inquiries.js";
 import { sendInquiryEmail } from "./lib/email.js";
 import { listRecipes, getRecipeBySlug, getRecipeById, createRecipe, updateRecipe, toggleRecipePublished, deleteRecipe } from "./lib/recipes.js";
 import { saveUploadedImage } from "./lib/upload.js";
@@ -21,12 +29,37 @@ import { renderRecipes } from "./views/pages/recipes.js";
 import { renderRecipe } from "./views/pages/recipe.js";
 import { renderAdminRecipes } from "./views/pages/admin/index.js";
 import { renderAdminRecipeForm } from "./views/pages/admin/edit.js";
-import { renderCartBadge, renderCartTable } from "./views/partials/cart.js";
+import { renderAdminHome } from "./views/pages/admin/home.js";
+import { renderAdminInquiries } from "./views/pages/admin/inquiries.js";
+import { renderAdminProducts } from "./views/pages/admin/products.js";
+import { renderAdminProductForm } from "./views/pages/admin/product-form.js";
+import { renderCartBadge, renderCartTable, renderCartSummary } from "./views/partials/cart.js";
 
 const app = new Hono();
 
 app.use("/assets/*", serveStatic({ root: "./public" }));
 app.use("/uploads/*", serveStatic({ root: "./public" }));
+
+function hasValidBasicAuth(headerValue) {
+  if (!headerValue || !headerValue.startsWith("Basic ")) return false;
+  const encoded = headerValue.slice("Basic ".length).trim();
+  try {
+    const decoded = Buffer.from(encoded, "base64").toString("utf8");
+    const [user, pass] = decoded.split(":");
+    return (
+      user === (process.env.ADMIN_USER || "admin") &&
+      pass === (process.env.ADMIN_PASS || "admin")
+    );
+  } catch {
+    return false;
+  }
+}
+
+app.use("*", async (c, next) => {
+  const authHeader = c.req.header("authorization");
+  c.set("isAdmin", hasValidBasicAuth(authHeader));
+  await next();
+});
 
 function isHtmx(c) {
   return c.req.header("HX-Request") === "true";
@@ -41,18 +74,30 @@ async function getProductsBySku() {
   return new Map(products.map((product) => [product.sku, product]));
 }
 
+function renderPage(c, { title, body, head, cartCount }) {
+  return c.html(
+    layout({
+      title,
+      body,
+      head,
+      cartCount,
+      showAdmin: c.get("isAdmin") === true
+    })
+  );
+}
+
 app.get("/", async (c) => {
   const products = await listProducts();
   const cart = await readCart(c, products);
   const body = renderHome();
-  return c.html(layout({ title: "Whisked Away Bakery", body, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: "Whisked Away Bakery", body, cartCount: cartItemCount(cart) });
 });
 
 app.get("/bake-shop", async (c) => {
   const products = await listProducts();
   const cart = await readCart(c, products);
   const body = renderBakeShop(products);
-  return c.html(layout({ title: "Bake Shop", body, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: "Bake Shop", body, cartCount: cartItemCount(cart) });
 });
 
 app.get("/bake-shop/:slug", async (c) => {
@@ -61,7 +106,7 @@ app.get("/bake-shop/:slug", async (c) => {
   if (!product) return c.notFound();
   const cart = await readCart(c, products);
   const body = renderProduct(product);
-  return c.html(layout({ title: product.name, body, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: product.name, body, cartCount: cartItemCount(cart) });
 });
 
 app.get("/cart", async (c) => {
@@ -69,7 +114,7 @@ app.get("/cart", async (c) => {
   const cart = await readCart(c, products);
   const productsBySku = await getProductsBySku();
   const body = renderCartPage(cart, productsBySku);
-  return c.html(layout({ title: "Your Cart", body, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: "Your Cart", body, cartCount: cartItemCount(cart) });
 });
 
 app.get("/cart/badge", async (c) => {
@@ -136,8 +181,10 @@ app.post("/cart/remove", async (c) => {
 app.get("/checkout", async (c) => {
   const products = await listProducts();
   const cart = await readCart(c, products);
-  const body = renderCheckoutPage({ hasItems: cart.items.length > 0 });
-  return c.html(layout({ title: "Inquiry Checkout", body, cartCount: cartItemCount(cart) }));
+  const productsBySku = await getProductsBySku();
+  const cartSummary = renderCartSummary(cart, productsBySku);
+  const body = renderCheckoutPage({ hasItems: cart.items.length > 0, cartSummary });
+  return renderPage(c, { title: "Inquiry Checkout", body, cartCount: cartItemCount(cart) });
 });
 
 app.post("/checkout", async (c) => {
@@ -178,7 +225,7 @@ app.get("/thank-you/:inquiryId", async (c) => {
   const products = await listProducts();
   const cart = await readCart(c, products);
   const body = renderThankYou(c.req.param("inquiryId"));
-  return c.html(layout({ title: "Thank You", body, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: "Thank You", body, cartCount: cartItemCount(cart) });
 });
 
 app.get("/recipes", async (c) => {
@@ -186,7 +233,7 @@ app.get("/recipes", async (c) => {
   const cart = await readCart(c, products);
   const recipes = await listRecipes();
   const body = renderRecipes(recipes);
-  return c.html(layout({ title: "Favorite Recipes", body, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: "Favorite Recipes", body, cartCount: cartItemCount(cart) });
 });
 
 app.get("/recipes/:slug", async (c) => {
@@ -195,7 +242,7 @@ app.get("/recipes/:slug", async (c) => {
   const recipe = await getRecipeBySlug(c.req.param("slug"));
   if (!recipe) return c.notFound();
   const body = renderRecipe(recipe);
-  return c.html(layout({ title: recipe.title, body, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: recipe.title, body, cartCount: cartItemCount(cart) });
 });
 
 app.use(
@@ -206,21 +253,86 @@ app.use(
   })
 );
 
-app.get("/admin", (c) => c.redirect("/admin/recipes", 302));
+app.get("/admin", async (c) => {
+  const products = await listProducts();
+  const cart = await readCart(c, products);
+  const body = renderAdminHome();
+  return renderPage(c, { title: "Admin", body, cartCount: cartItemCount(cart) });
+});
 
 app.get("/admin/recipes", async (c) => {
   const products = await listProducts();
   const cart = await readCart(c, products);
   const recipes = await listRecipes({ includeDrafts: true });
   const body = renderAdminRecipes(recipes);
-  return c.html(layout({ title: "Recipes Admin", body, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: "Recipes Admin", body, cartCount: cartItemCount(cart) });
+});
+
+app.get("/admin/inquiries", async (c) => {
+  const products = await listProducts();
+  const cart = await readCart(c, products);
+  const inquiries = await listInquiriesWithItems();
+  const body = renderAdminInquiries(inquiries);
+  return renderPage(c, { title: "Inquiries", body, cartCount: cartItemCount(cart) });
+});
+
+app.get("/admin/products", async (c) => {
+  const products = await listProducts();
+  const cart = await readCart(c, products);
+  const body = renderAdminProducts(products);
+  return renderPage(c, { title: "Bake Shop Items", body, cartCount: cartItemCount(cart) });
+});
+
+app.get("/admin/products/new", async (c) => {
+  const products = await listProducts();
+  const cart = await readCart(c, products);
+  const { body, head } = renderAdminProductForm({ product: null, formAction: "/admin/products", title: "New Bake Shop Item" });
+  return renderPage(c, { title: "New Bake Shop Item", body, head, cartCount: cartItemCount(cart) });
+});
+
+app.post("/admin/products", async (c) => {
+  const body = await c.req.parseBody();
+  const name = String(body.name || "").trim();
+  const sku = String(body.sku || "").trim();
+  const slug = String(body.slug || "").trim();
+  const description = String(body.description || "").trim();
+  const imageUrl = String(body.image_url || "").trim();
+  const priceDisplay = String(body.price_display || "").trim();
+  await createProduct({ sku, slug, name, description, imageUrl, priceDisplay });
+  return c.redirect("/admin/products", 303);
+});
+
+app.get("/admin/products/:id/edit", async (c) => {
+  const products = await listProducts();
+  const cart = await readCart(c, products);
+  const product = await getProductById(c.req.param("id"));
+  if (!product) return c.notFound();
+  const { body, head } = renderAdminProductForm({ product, formAction: `/admin/products/${product.id}`, title: "Edit Bake Shop Item" });
+  return renderPage(c, { title: "Edit Bake Shop Item", body, head, cartCount: cartItemCount(cart) });
+});
+
+app.post("/admin/products/:id", async (c) => {
+  const body = await c.req.parseBody();
+  const name = String(body.name || "").trim();
+  const sku = String(body.sku || "").trim();
+  const slug = String(body.slug || "").trim();
+  const description = String(body.description || "").trim();
+  const imageUrl = String(body.image_url || "").trim();
+  const priceDisplay = String(body.price_display || "").trim();
+  await updateProduct(c.req.param("id"), { sku, slug, name, description, imageUrl, priceDisplay });
+  return c.redirect("/admin/products", 303);
+});
+
+app.post("/admin/products/:id/delete", async (c) => {
+  await deleteProduct(c.req.param("id"));
+  return c.redirect("/admin/products", 303);
 });
 
 app.get("/admin/recipes/new", async (c) => {
   const products = await listProducts();
   const cart = await readCart(c, products);
   const { body, head } = renderAdminRecipeForm({ recipe: null, formAction: "/admin/recipes", title: "New Recipe" });
-  return c.html(layout({ title: "New Recipe", body, head, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: "New Recipe", body, head, cartCount: cartItemCount(cart) });
 });
 
 app.post("/admin/recipes", async (c) => {
@@ -246,7 +358,7 @@ app.get("/admin/recipes/:id/edit", async (c) => {
   const recipe = await getRecipeById(c.req.param("id"));
   if (!recipe) return c.notFound();
   const { body, head } = renderAdminRecipeForm({ recipe, formAction: `/admin/recipes/${recipe.id}`, title: "Edit Recipe" });
-  return c.html(layout({ title: "Edit Recipe", body, head, cartCount: cartItemCount(cart) }));
+  return renderPage(c, { title: "Edit Recipe", body, head, cartCount: cartItemCount(cart) });
 });
 
 app.post("/admin/recipes/:id", async (c) => {
@@ -292,3 +404,5 @@ const port = Number(process.env.PORT) || 3000;
 serve({ fetch: app.fetch, port });
 
 console.log(`Whisked Away server running on http://localhost:${port}`);
+
+

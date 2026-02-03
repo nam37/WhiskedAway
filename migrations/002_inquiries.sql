@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS inquiry_items (
   sku VARCHAR(100) NOT NULL,
   qty INTEGER NOT NULL,
   name_snapshot VARCHAR(255),
-  price_snapshot VARCHAR(100)
+  price_snapshot VARCHAR(100),
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_inquiry_items_inquiry ON inquiry_items (inquiry_id);

@@ -62,3 +62,25 @@ export function renderCartTable(cart, productsBySku) {
       </tbody>
     </table>`;
 }
+
+export function renderCartSummary(cart, productsBySku) {
+  if (!cart.items.length) {
+    return `<div class="empty-state">Your cart is empty.</div>`;
+  }
+
+  const items = cart.items
+    .map((item) => {
+      const product = productsBySku.get(item.sku);
+      return `
+      <div class="summary-item">
+        <div>
+          <strong>${escapeHtml(product?.name || item.sku)}</strong>
+          <p class="muted">Qty ${item.qty}</p>
+        </div>
+        <span>${escapeHtml(product?.price_display || "")}</span>
+      </div>`;
+    })
+    .join("\n");
+
+  return `<div class="summary-list">${items}</div>`;
+}

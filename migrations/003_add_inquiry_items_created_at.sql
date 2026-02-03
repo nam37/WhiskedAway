@@ -1,0 +1,2 @@
+﻿ALTER TABLE inquiry_items
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();

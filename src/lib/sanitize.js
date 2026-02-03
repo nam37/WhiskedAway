@@ -29,3 +29,5 @@ export function sanitizeRecipeHtml(html) {
     }
   });
 }
+
+export const sanitizeProductHtml = sanitizeRecipeHtml;
