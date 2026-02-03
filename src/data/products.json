@@ -5,7 +5,7 @@
     "name": "Butter Croissant",
     "description": "A flaky, golden croissant with deep butter aroma and delicate layers.",
     "price_display": "$4.50",
-    "image_url": "/assets/images/whisked-away-hero.jpg"
+    "image_url": "https://images.unsplash.com/photo-1759566926606-392600d16c94?auto=format&fit=crop&w=1600&q=80"
   },
   {
     "sku": "TART-LEMON",
@@ -13,7 +13,7 @@
     "name": "Lemon Tart",
     "description": "Bright citrus curd in a crisp shell with a soft, toasted meringue cap.",
     "price_display": "$6.00",
-    "image_url": "/assets/images/whisked-away-hero.jpg"
+    "image_url": "https://images.unsplash.com/photo-1676822100416-c96e27b2db5b?auto=format&fit=crop&w=1600&q=80"
   },
   {
     "sku": "COOKIE-CHOCO",
@@ -21,7 +21,7 @@
     "name": "Chocolate Chunk Cookie",
     "description": "Chewy center, crisp edge, and oversized chocolate chunks.",
     "price_display": "$3.50",
-    "image_url": "/assets/images/whisked-away-hero.jpg"
+    "image_url": "https://images.unsplash.com/photo-1598839950900-cb950a10bc4d?auto=format&fit=crop&w=1600&q=80"
   },
   {
     "sku": "CAKE-VANILLA",
@@ -29,7 +29,7 @@
     "name": "Vanilla Celebration Cake",
     "description": "Classic vanilla sponge layered with whipped buttercream and vanilla bean.",
     "price_display": "$48.00",
-    "image_url": "/assets/images/whisked-away-hero.jpg"
+    "image_url": "https://images.unsplash.com/photo-1658958878926-bdce6cb9be40?auto=format&fit=crop&w=1600&q=80"
   },
   {
     "sku": "MUFFIN-BERRY",
@@ -37,7 +37,7 @@
     "name": "Triple Berry Muffin",
     "description": "Blueberries, raspberries, and strawberries with a light crumble top.",
     "price_display": "$4.25",
-    "image_url": "/assets/images/whisked-away-hero.jpg"
+    "image_url": "https://images.unsplash.com/photo-1585665187093-a3511c2fe57a?auto=format&fit=crop&w=1600&q=80"
   },
   {
     "sku": "BREAD-SOUR",
@@ -45,6 +45,6 @@
     "name": "Country Sourdough",
     "description": "Naturally leavened loaf with a crisp crust and open crumb.",
     "price_display": "$8.00",
-    "image_url": "/assets/images/whisked-away-hero.jpg"
+    "image_url": "https://images.unsplash.com/photo-1719475738774-e62c4bd01e26?auto=format&fit=crop&w=1600&q=80"
   }
 ]

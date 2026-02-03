@@ -1,1 +1,32 @@
-﻿[]
+﻿[
+  {
+    "id": "c7e2d760-1c67-4d3d-a8e3-3d1c6e3fe5f1",
+    "slug": "lavender-honey-shortbread",
+    "title": "Lavender Honey Shortbread",
+    "image_url": "https://images.unsplash.com/photo-1745816455949-88de97c990f5?auto=format&fit=crop&w=1600&q=80",
+    "recipe_html": "<p>Butter-forward shortbread with lavender and wildflower honey.</p><h3>Ingredients</h3><ul><li>Unsalted butter</li><li>Sugar</li><li>Flour</li><li>Lavender</li><li>Honey</li></ul><h3>Steps</h3><ol><li>Cream butter + sugar.</li><li>Fold in dry ingredients.</li><li>Bake until golden.</li></ol>",
+    "published": true,
+    "created_at": "2026-02-03T00:00:00.000Z",
+    "updated_at": "2026-02-03T00:00:00.000Z"
+  },
+  {
+    "id": "b2f4c728-8f25-4c12-98df-1af0f6b0a3e8",
+    "slug": "brown-butter-banana-bread",
+    "title": "Brown Butter Banana Bread",
+    "image_url": "https://images.unsplash.com/photo-1678526793221-df7e55a4e65f?auto=format&fit=crop&w=1600&q=80",
+    "recipe_html": "<p>Rich banana bread with browned butter and warm spices.</p><h3>Ingredients</h3><ul><li>Bananas</li><li>Butter</li><li>Flour</li><li>Cinnamon</li><li>Eggs</li></ul><h3>Steps</h3><ol><li>Brown the butter.</li><li>Mix wet ingredients.</li><li>Fold in dry and bake.</li></ol>",
+    "published": true,
+    "created_at": "2026-02-03T00:00:00.000Z",
+    "updated_at": "2026-02-03T00:00:00.000Z"
+  },
+  {
+    "id": "d1a3a4c1-2f78-4e0a-99b3-2a8b7b6e2a10",
+    "slug": "citrus-olive-oil-cake",
+    "title": "Citrus Olive Oil Cake",
+    "image_url": "https://images.unsplash.com/photo-1569896254409-ac66c17041d2?auto=format&fit=crop&w=1600&q=80",
+    "recipe_html": "<p>Moist olive oil cake with citrus zest and a light glaze.</p><h3>Ingredients</h3><ul><li>Olive oil</li><li>Orange zest</li><li>Flour</li><li>Eggs</li><li>Sugar</li></ul><h3>Steps</h3><ol><li>Whisk wet ingredients.</li><li>Fold in dry.</li><li>Bake and glaze.</li></ol>",
+    "published": true,
+    "created_at": "2026-02-03T00:00:00.000Z",
+    "updated_at": "2026-02-03T00:00:00.000Z"
+  }
+]
