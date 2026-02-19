@@ -23,20 +23,25 @@ export function layout({ title, body, cartCount = 0, head = "", showAdmin = fals
             <span class="brand-subtitle">Bakery</span>
           </span>
         </a>
-        <nav class="site-nav">
-          <a href="/bake-shop">Bake Shop</a>
-          <a href="/recipes">Favorite Recipes</a>
-          ${showAdmin ? '<a href="/admin">Admin</a>' : ""}
-          <a href="/cart" class="cart-link">
-            Cart
-            <span
-              id="cart-badge"
-              hx-get="/cart/badge"
-              hx-trigger="load, cart-updated from:body"
-              hx-swap="innerHTML"
-            >${renderCartBadge(cartCount)}</span>
-          </a>
-        </nav>
+        <div class="header-right">
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav-menu" aria-label="Open menu">
+            ☰
+          </button>
+          <nav class="site-nav" id="site-nav-menu">
+            <a href="/bake-shop">Bake Shop</a>
+            <a href="/recipes">Favorite Recipes</a>
+            ${showAdmin ? '<a href="/admin">Admin</a>' : ""}
+            <a href="/cart" class="cart-link">
+              Cart
+              <span
+                id="cart-badge"
+                hx-get="/cart/badge"
+                hx-trigger="load, cart-updated from:body"
+                hx-swap="innerHTML"
+              >${renderCartBadge(cartCount)}</span>
+            </a>
+          </nav>
+        </div>
       </div>
     </header>
     <main>
@@ -54,6 +59,42 @@ export function layout({ title, body, cartCount = 0, head = "", showAdmin = fals
         </div>
       </div>
     </footer>
+    <script>
+      (() => {
+        const navToggle = document.querySelector('.nav-toggle');
+        const nav = document.getElementById('site-nav-menu');
+
+        if (!navToggle || !nav) {
+          return;
+        }
+
+        navToggle.addEventListener('click', () => {
+          const isOpen = nav.classList.toggle('open');
+          navToggle.setAttribute('aria-expanded', String(isOpen));
+          navToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+        });
+
+        document.addEventListener('click', (event) => {
+          if (window.innerWidth > 720) {
+            return;
+          }
+
+          if (!nav.contains(event.target) && !navToggle.contains(event.target)) {
+            nav.classList.remove('open');
+            navToggle.setAttribute('aria-expanded', 'false');
+            navToggle.setAttribute('aria-label', 'Open menu');
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 720) {
+            nav.classList.remove('open');
+            navToggle.setAttribute('aria-expanded', 'false');
+            navToggle.setAttribute('aria-label', 'Open menu');
+          }
+        });
+      })();
+    </script>
   </body>
 </html>`;
 }
