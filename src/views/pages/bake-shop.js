@@ -1,4 +1,5 @@
-﻿import { escapeHtml } from "../../lib/escape.js";
+import { escapeHtml } from "../../lib/escape.js";
+import { sanitizeProductHtml } from "../../lib/sanitize.js";
 
 export function renderBakeShop(products) {
   const cards = products
@@ -8,7 +9,7 @@ export function renderBakeShop(products) {
         <img src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.name)}" />
         <div class="product-card-body">
           <h3><a href="/bake-shop/${escapeHtml(product.slug)}">${escapeHtml(product.name)}</a></h3>
-          <p>${escapeHtml(product.description)}</p>
+          <div class="product-description">${sanitizeProductHtml(product.description)}</div>
           <div class="product-card-footer">
             <span>${escapeHtml(product.price_display)}</span>
             <form method="post" action="/cart/add" hx-post="/cart/add" hx-target="#cart-badge" hx-swap="innerHTML">
@@ -30,3 +31,4 @@ export function renderBakeShop(products) {
     ${cards}
   </section>`;
 }
+

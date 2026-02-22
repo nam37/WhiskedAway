@@ -1,10 +1,11 @@
-﻿import { escapeHtml } from "../../lib/escape.js";
+import { escapeHtml } from "../../lib/escape.js";
+import { sanitizeProductHtml } from "../../lib/sanitize.js";
 
 export function renderProduct(product) {
   return `
   <section class="container page-header">
     <h1>${escapeHtml(product.name)}</h1>
-    <p>${escapeHtml(product.description)}</p>
+    <div class="product-description">${sanitizeProductHtml(product.description)}</div>
   </section>
   <section class="container product-detail">
     <div>
@@ -24,3 +25,4 @@ export function renderProduct(product) {
     </div>
   </section>`;
 }
+
