@@ -41,7 +41,7 @@ be easy to grow into a more sophisticated system later
 2. Goals & Non-Goals
 2.1 Goals
 
-Replace Astro with server-rendered HTML
+Use server-rendered HTML
 
 Use htmx for interactivity
 
